@@ -9,13 +9,10 @@ AConveyorManager::AConveyorManager()
 {
     this->PrimaryActorTick.bCanEverTick = true;
 
-    this->ItemTransportGraph = CreateDefaultSubobject<UItemTransportGraph>(TEXT("Item Transport Graph"));
-
     if (!AConveyorManager::Instance.IsValid())
     {
         AConveyorManager::Instance = this;
     }
-
 }
 
 void AConveyorManager::BeginPlay()
@@ -45,6 +42,13 @@ void AConveyorManager::Tick(float DeltaSeconds)
     this->ProcessAllItemTransports(TopologicalOrder, DeltaSeconds);
 
     this->UpdateAllConveyors(DeltaSeconds);
+}
+
+void AConveyorManager::PostInitializeComponents()
+{
+    Super::PostInitializeComponents();
+
+    this->ItemTransportGraph = NewObject<UItemTransportGraph>();
 }
 
 void AConveyorManager::UpdateAllItemTransports(const TArray<UItemTransportNode*>& Order, float DeltaSeconds)

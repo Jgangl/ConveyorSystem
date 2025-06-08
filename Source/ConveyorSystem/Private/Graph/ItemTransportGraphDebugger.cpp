@@ -63,8 +63,6 @@ void AItemTransportGraphDebugger::Tick(float DeltaSeconds)
 
 void AItemTransportGraphDebugger::DrawGraph()
 {
-    Super::DrawGraph();
-
     if (!this->Graph)
     {
         UE_LOG(LogTemp, Error, TEXT("%hs : Graph is nullptr"), __FUNCTION__);
@@ -85,6 +83,12 @@ void AItemTransportGraphDebugger::DrawGraph()
 
     for (UEdgeBase* Edge : this->Graph->GetEdges())
     {
+        if (!Edge || !Edge->Source || !Edge->Destination)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Edge is null"));
+            continue;
+        }
+
         FVector Direction = (Edge->Source->GetLocation() - Edge->Destination->GetLocation());
         Direction.Normalize();
 

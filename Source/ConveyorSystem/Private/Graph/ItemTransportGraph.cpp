@@ -123,6 +123,12 @@ TArray<UItemTransportNode*> UItemTransportGraph::GetTopologicalOrder()
 
         TopOrder.Add(Node);
 
+        if (!Node)
+        {
+            UE_LOG(LogTemp, Error, TEXT("Node is nullptr"));
+            break;
+        }
+
         // Go through each destination node
         for (UItemTransportNode* DestinationNode : Node->DestinationNodes)
         {

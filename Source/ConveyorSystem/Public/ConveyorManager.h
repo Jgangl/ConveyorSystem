@@ -21,6 +21,8 @@ public:
 
     virtual void Tick(float DeltaSeconds) override;
 
+    virtual void PostInitializeComponents() override;
+
     void UpdateAllItemTransports(const TArray<UItemTransportNode*>& Order, float DeltaSeconds);
 
     void ProcessAllItemTransports(const TArray<UItemTransportNode*>& Order, float DeltaSeconds);
