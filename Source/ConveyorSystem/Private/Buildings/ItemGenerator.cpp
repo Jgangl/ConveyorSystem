@@ -20,6 +20,12 @@ void AItemGenerator::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
 
+    if (this->ItemToGenerate == nullptr)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ItemToGenerate has not been set. No items will be generated."));
+        return;
+    }
+
     if (UItemGeneratorNode* ItemGeneratorNode = Cast<UItemGeneratorNode>(this->GraphNodeComponent->GetNode()))
     {
         ItemGeneratorNode->SetItemToGenerate(this->ItemToGenerate);

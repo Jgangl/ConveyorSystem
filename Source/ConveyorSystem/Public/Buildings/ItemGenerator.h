@@ -3,18 +3,19 @@
 #pragma once
 
 // BEGIN JCore Includes
-#include "Building/Buildable.h"
 #include "Building/BuildingConnectionComponent.h"
 #include "Graph/GraphNodeComponent.h"
 #include "Inventory/ItemDataAsset.h"
 // END JCore Includes
+
+#include "CSBuildable.h"
 
 #include "ItemGenerator.generated.h"
 
 DECLARE_LOG_CATEGORY_CLASS(LogItemGenerator, Log, All)
 
 UCLASS(Abstract, Blueprintable)
-class CONVEYORSYSTEM_API AItemGenerator : public ABuildable
+class CONVEYORSYSTEM_API AItemGenerator : public ACSBuildable
 {
     GENERATED_BODY()
 
