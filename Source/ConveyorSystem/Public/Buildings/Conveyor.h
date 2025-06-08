@@ -30,12 +30,14 @@ public:
 
     virtual void PostInitializeComponents() override;
 
+    virtual void OnConstruction(const FTransform& Transform) override;
+
     virtual void CompleteBuilding(UBuildingConnectionComponent* FromSnapConnection, UBuildingConnectionComponent* ToSnapConnection) override;
 
     void SetSplinePointTransform(uint32 SplinePointIndex, const FTransform &InSplineTransform);
 
     UFUNCTION(BlueprintCallable)
-    void CreateBaseInstances(const FVector &Start, const FVector &End);
+    void CreateBaseInstances();
 
     void UpdateInstanceTransforms(const float &DeltaTime);
 
@@ -51,11 +53,8 @@ public:
     UPROPERTY(Category="Options", EditAnywhere, BlueprintReadWrite)
     float DistanceBetweenItems;
 
-    UPROPERTY(Category="Options", EditAnywhere, BlueprintReadWrite)
-    float Length;
-
-    UPROPERTY(Category="Options", EditAnywhere, BlueprintReadWrite)
-    float BaseLength;
+    UPROPERTY(Category="Options", EditAnywhere, BlueprintReadWrite, meta=(ClampMin = "1", UIMin=1))
+    float BaseSpacing;
 
     void OnItemAdded(const FConveyorItem &InItem);
 

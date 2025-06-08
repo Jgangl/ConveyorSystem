@@ -48,9 +48,6 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     TArray<AConveyor*> Conveyors;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    APlayerController* PlayerController;
-
 private:
     static TWeakObjectPtr<AConveyorManager> Instance;
 };

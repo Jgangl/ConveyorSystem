@@ -9,17 +9,12 @@ AConveyorManager::AConveyorManager()
 {
     this->PrimaryActorTick.bCanEverTick = true;
 
-    if (!AConveyorManager::Instance.IsValid())
-    {
-        AConveyorManager::Instance = this;
-    }
+    this->ItemTransportGraph = nullptr;
 }
 
 void AConveyorManager::BeginPlay()
 {
     Super::BeginPlay();
-
-    this->PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
     TArray<AActor*> OutConveyors;
 
@@ -35,6 +30,12 @@ void AConveyorManager::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
+    if (!this->ItemTransportGraph)
+    {
+        UE_LOG(LogTemp,  Error, TEXT("Graph is nullptr"));
+        return;
+    }
+
     TArray<UItemTransportNode*> TopologicalOrder = this->ItemTransportGraph->GetTopologicalOrder();
 
     // All items on every conveyor need to moved before pushing/pulling from neighboring nodes every tick
@@ -48,7 +49,18 @@ void AConveyorManager::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
 
-    this->ItemTransportGraph = NewObject<UItemTransportGraph>();
+    if (!AConveyorManager::Instance.IsValid())
+    {
+        AConveyorManager::Instance = this;
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Multiple Conveyor Managers found. Only 1 should be added to a map."));
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("Creating a graph on %s"), *this->GetName());
+
+    this->ItemTransportGraph = NewObject<UItemTransportGraph>(this);
 }
 
 void AConveyorManager::UpdateAllItemTransports(const TArray<UItemTransportNode*>& Order, float DeltaSeconds)

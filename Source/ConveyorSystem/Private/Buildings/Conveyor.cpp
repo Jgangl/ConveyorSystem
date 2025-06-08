@@ -34,8 +34,7 @@ AConveyor::AConveyor()
 
     this->Speed                = 40.0f;
     this->DistanceBetweenItems = 50.0f;
-    this->Length               = 100.0f;
-    this->BaseLength           = 100.0f;
+    this->BaseSpacing          = 100.0f;
 }
 
 void AConveyor::BeginPlay()
@@ -45,7 +44,7 @@ void AConveyor::BeginPlay()
     FVector Start = this->GetActorLocation();
     FVector End   = Start + FVector(100.0f, 0.0f, 0.0f);
 
-    this->CreateBaseInstances(Start, End);
+    this->CreateBaseInstances();
 
     this->BaseInstances->RecreatePhysicsState();
 
@@ -76,12 +75,16 @@ void AConveyor::PostInitializeComponents()
     }
 }
 
+void AConveyor::OnConstruction(const FTransform& Transform)
+{
+    Super::OnConstruction(Transform);
+
+    this->CreateBaseInstances();
+}
+
 void AConveyor::CompleteBuilding(UBuildingConnectionComponent* FromSnapConnection, UBuildingConnectionComponent* ToSnapConnection)
 {
     Super::CompleteBuilding(FromSnapConnection, ToSnapConnection);
-
-    // Need to update the conveyor's length when we are done building
-    this->Length = this->BaseInstances->GetInstanceCount() * this->BaseLength;
 
     //FVector OutputItemConnectionLocation = this->OutItemConnectionComponent->GetRelativeLocation();
     //OutputItemConnectionLocation.X = this->GetEndLocation().X;
@@ -120,34 +123,32 @@ void AConveyor::SetSplinePointTransform(uint32 SplinePointIndex, const FTransfor
     this->SplineComponent->SetTangentAtSplinePoint(SplinePointIndex, Tangent, ESplineCoordinateSpace::World);
 }
 
-void AConveyor::CreateBaseInstances(const FVector& Start, const FVector& End)
+void AConveyor::CreateBaseInstances()
 {
-    // TODO: We shouldn't clear this every frame
+    ensure(this->BaseInstances);
+    ensure(this->SplineComponent);
+
     this->BaseInstances->ClearInstances();
 
-    FVector LocalStart = this->GetTransform().InverseTransformPosition(Start);
-    FVector LocalEnd = this->GetTransform().InverseTransformPosition(End);
+    float SplineLength = this->SplineComponent->GetSplineLength();
 
-    const FVector LocDifference = LocalEnd - LocalStart;
+    ensure(!FMath::IsNearlyZero(this->BaseSpacing));
 
-    int NumXGridPoints = FMath::Abs(LocDifference.X) / 100.0f;
+    int32 NumBaseInstances = (SplineLength / this->BaseSpacing);
 
-    if (NumXGridPoints == 0)
+    for (int32 i = 0; i < NumBaseInstances; i++)
     {
-        NumXGridPoints = 1;
-    }
+        float BaseDist = this->BaseSpacing * i;
 
-    for (int i = 0; i < NumXGridPoints; i++)
-    {
-        FVector GridLoc = FVector::Zero();
+        FVector BaseOffset(50.0f, 0.0f, 0.0f);
 
-        GridLoc.X += i * 100.0f;
+        FVector BaseLocation = this->SplineComponent->GetLocationAtDistanceAlongSpline(BaseDist, ESplineCoordinateSpace::Local);
 
-        DrawDebugSphere(GetWorld(), GridLoc, 50.0f, 10, FColor::Blue);
+        BaseLocation += BaseOffset;
 
-        FTransform NewTransform;
-        NewTransform.SetLocation(GridLoc);
-        this->BaseInstances->AddInstance(NewTransform, false);
+        FTransform NewBaseTransform = FTransform(BaseLocation);
+
+        this->BaseInstances->AddInstance(NewBaseTransform);
     }
 }
 

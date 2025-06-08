@@ -14,8 +14,6 @@ void ACSBuildable::BeginPlay()
 {
     Super::BeginPlay();
 
-    UE_LOG(LogTemp, Warning, TEXT("Begin play"));
-
     this->CompleteBuilding(nullptr, nullptr);
 
     this->UpdateGraphConnections();
@@ -46,11 +44,9 @@ void ACSBuildable::CompleteBuilding(UBuildingConnectionComponent* FromSnapConnec
 
     if (!Graph)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Couldn't find a graph"));
+        UE_LOG(LogTemp, Warning, TEXT("Couldn't find a graph on conveyor manager"));
         return;
     }
-
-    UE_LOG(LogTemp, Warning, TEXT("Adding node"));
 
     Graph->AddNode(GraphNodeComponent->GetNode());
 }
