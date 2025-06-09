@@ -1,5 +1,6 @@
 #include "Buildings/Conveyor.h"
 
+#include "Components/SplineMeshComponent.h"
 #include "Graph/Nodes/ItemConveyorNode.h"
 
 AConveyor::AConveyor()
@@ -16,10 +17,6 @@ AConveyor::AConveyor()
     this->OutItemConnectionComponent = CreateDefaultSubobject<UBuildingConnectionComponent>(TEXT("Output Item Connection"));
     this->OutItemConnectionComponent->SetupAttachment(this->RootComponent);
     this->OutItemConnectionComponent->SetIsInput(false);
-
-    this->BaseInstances = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Base Instances"));
-    this->BaseInstances->SetupAttachment(this->RootComponent);
-    this->BaseInstances->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
     this->ItemInstances = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Item Instances"));
     this->ItemInstances->SetupAttachment(this->RootComponent);
@@ -45,8 +42,6 @@ void AConveyor::BeginPlay()
     FVector End   = Start + FVector(100.0f, 0.0f, 0.0f);
 
     this->CreateBaseInstances();
-
-    this->BaseInstances->RecreatePhysicsState();
 
     FVector InputItemConnectionLocation = this->InItemConnectionComponent->GetRelativeLocation();
     InputItemConnectionLocation.X = this->GetStartLocation().X;
@@ -125,11 +120,44 @@ void AConveyor::SetSplinePointTransform(uint32 SplinePointIndex, const FTransfor
 
 void AConveyor::CreateBaseInstances()
 {
-    ensure(this->BaseInstances);
     ensure(this->SplineComponent);
 
-    this->BaseInstances->ClearInstances();
+    this->GetComponents<USplineMeshComponent>(this->BaseSplineMeshComponents);
 
+    for (USplineMeshComponent* SplineMesh : this->BaseSplineMeshComponents)
+    {
+        SplineMesh->DestroyComponent();
+    }
+
+    this->BaseSplineMeshComponents.Empty();
+
+    int32 NumSplinePoints = this->SplineComponent->GetNumberOfSplinePoints();
+
+    int32 NumSplineMeshComponents = NumSplinePoints - 1;
+
+    for (int32 i = 0; i < NumSplineMeshComponents; i++)
+    {
+        USplineMeshComponent* BaseSplineMesh = NewObject<USplineMeshComponent>(this);
+        BaseSplineMesh->SetStaticMesh(this->BaseMesh);
+        BaseSplineMesh->SetMobility(EComponentMobility::Static);
+        BaseSplineMesh->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+        BaseSplineMesh->SetupAttachment(this->RootComponent);
+
+        FVector StartLocation = this->SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local);
+        FVector StartTangent = this->SplineComponent->GetTangentAtSplinePoint(i, ESplineCoordinateSpace::Local);
+
+        FVector EndLocation = this->SplineComponent->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
+        FVector EndTangent = this->SplineComponent->GetTangentAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
+
+        BaseSplineMesh->SetForwardAxis(ESplineMeshAxis::X);
+        BaseSplineMesh->SetStartAndEnd(StartLocation, StartTangent, EndLocation, EndTangent, true );
+
+        BaseSplineMesh->RegisterComponent();
+
+        this->BaseSplineMeshComponents.Add(BaseSplineMesh);
+    }
+
+/*
     float SplineLength = this->SplineComponent->GetSplineLength();
 
     ensure(!FMath::IsNearlyZero(this->BaseSpacing));
@@ -150,6 +178,7 @@ void AConveyor::CreateBaseInstances()
 
         this->BaseInstances->AddInstance(NewBaseTransform);
     }
+    */
 }
 
 FVector AConveyor::GetStartLocation()

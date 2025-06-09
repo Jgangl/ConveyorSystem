@@ -4,6 +4,7 @@
 
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SplineComponent.h"
+#include "Components/SplineMeshComponent.h"
 
 // BEGIN JCore Includes
 #include "Building/Buildable.h"
@@ -80,10 +81,13 @@ protected:
     UBuildingConnectionComponent* OutItemConnectionComponent;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    UInstancedStaticMeshComponent* BaseInstances;
+    TArray<TObjectPtr<USplineMeshComponent>> BaseSplineMeshComponents;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     UInstancedStaticMeshComponent* ItemInstances;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UStaticMesh* BaseMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient)
     float LastTimeOnScreen;
