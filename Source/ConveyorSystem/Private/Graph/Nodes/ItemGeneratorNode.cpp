@@ -22,7 +22,7 @@ UItemDataAsset* UItemGeneratorNode::GrabItem(UItemTransportNode* GrabbingNode)
 
     if (this->GenerationTimer >= (this->GenerationRate / 60.0f))
     {
-        this->GenerationRate = 0.0f;
+        this->GenerationTimer = 0.0f;
         return this->ItemToGenerate;
     }
 
