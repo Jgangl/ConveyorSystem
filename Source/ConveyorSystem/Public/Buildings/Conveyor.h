@@ -27,8 +27,6 @@ class CONVEYORSYSTEM_API AConveyor : public ACSBuildable
 public:
     AConveyor();
 
-    virtual void BeginPlay() override;
-
     virtual void PostInitializeComponents() override;
 
     virtual void OnConstruction(const FTransform& Transform) override;
@@ -62,12 +60,6 @@ public:
     void OnItemRemoved();
 
 protected:
-
-    virtual void OnConnectionConnected(UBuildingConnectionComponent* FromConnectedConnection,
-                                       UBuildingConnectionComponent* ToConnectedConnection) override;
-
-    virtual void OnConnectionDisconnected(UBuildingConnectionComponent* DisconnectedConnection) override;
-
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UGraphNodeComponent* GraphNodeComponent;
 

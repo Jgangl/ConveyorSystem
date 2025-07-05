@@ -22,38 +22,14 @@ AConveyor::AConveyor()
     this->ItemInstances->SetupAttachment(this->RootComponent);
     this->ItemInstances->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-    // 3 Floats for an FVector(X, Y, Z)
-    this->ItemInstances->SetNumCustomDataFloats(3);
-
     this->SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("Spline Component"));
     this->SplineComponent->SetupAttachment(this->RootComponent);
     this->SplineComponent->SetSplinePointType(0, ESplinePointType::Curve);
+    this->SplineComponent->ReparamStepsPerSegment = 50;
 
     this->Speed                = 40.0f;
     this->DistanceBetweenItems = 50.0f;
     this->BaseSpacing          = 100.0f;
-}
-
-void AConveyor::BeginPlay()
-{
-    Super::BeginPlay();
-
-    FVector Start = this->GetActorLocation();
-    FVector End   = Start + FVector(100.0f, 0.0f, 0.0f);
-
-    this->CreateBaseInstances();
-
-    FVector InputItemConnectionLocation = this->InItemConnectionComponent->GetRelativeLocation();
-    InputItemConnectionLocation.X = this->GetStartLocation().X;
-
-    // Move output item connection component to end of conveyor
-    //this->InItemConnectionComponent->SetRelativeLocation(InputItemConnectionLocation);
-
-    FVector OutputItemConnectionLocation = this->OutItemConnectionComponent->GetRelativeLocation();
-    OutputItemConnectionLocation.X = this->GetEndLocation().X;
-
-    // Move output item connection component to end of conveyor
-    //this->OutItemConnectionComponent->SetRelativeLocation(OutputItemConnectionLocation);
 }
 
 void AConveyor::PostInitializeComponents()
@@ -81,9 +57,6 @@ void AConveyor::CompleteBuilding(UBuildingConnectionComponent* FromSnapConnectio
 {
     Super::CompleteBuilding(FromSnapConnection, ToSnapConnection);
 
-    //FVector OutputItemConnectionLocation = this->OutItemConnectionComponent->GetRelativeLocation();
-    //OutputItemConnectionLocation.X = this->GetEndLocation().X;
-
     FVector FirstSplinePointLocation = this->SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::Local);
     this->InItemConnectionComponent->SetRelativeLocation(FirstSplinePointLocation);
 
@@ -99,11 +72,6 @@ void AConveyor::CompleteBuilding(UBuildingConnectionComponent* FromSnapConnectio
 
     // Time = Distance / Speed
     this->SplineComponent->Duration = this->SplineComponent->GetSplineLength() / this->Speed;
-
-    //this->SplineComponent->SetLocationAtSplinePoint(0, this->GetStartLocation(), ESplineCoordinateSpace::Local);
-    //FTransform SplineTransform;
-    //SplineTransform.SetLocation(this->GetStartLocation());
-    //this->SetSplinePointTransform(0, )
 }
 
 void AConveyor::SetSplinePointTransform(uint32 SplinePointIndex, const FTransform &InSplineTransform)
@@ -156,29 +124,6 @@ void AConveyor::CreateBaseInstances()
 
         this->BaseSplineMeshComponents.Add(BaseSplineMesh);
     }
-
-/*
-    float SplineLength = this->SplineComponent->GetSplineLength();
-
-    ensure(!FMath::IsNearlyZero(this->BaseSpacing));
-
-    int32 NumBaseInstances = (SplineLength / this->BaseSpacing);
-
-    for (int32 i = 0; i < NumBaseInstances; i++)
-    {
-        float BaseDist = this->BaseSpacing * i;
-
-        FVector BaseOffset(50.0f, 0.0f, 0.0f);
-
-        FVector BaseLocation = this->SplineComponent->GetLocationAtDistanceAlongSpline(BaseDist, ESplineCoordinateSpace::Local);
-
-        BaseLocation += BaseOffset;
-
-        FTransform NewBaseTransform = FTransform(BaseLocation);
-
-        this->BaseInstances->AddInstance(NewBaseTransform);
-    }
-    */
 }
 
 FVector AConveyor::GetStartLocation()
@@ -238,23 +183,6 @@ void AConveyor::UpdateInstanceTransforms(const float &DeltaTime)
 
     const TArray<FConveyorItem> &ConveyorItems = ItemConveyorNode->GetItems();
 
-/*
-    for (int IndexOfItem = 0; IndexOfItem < ConveyorItems.Num(); IndexOfItem++)
-    {
-        const FVector& ItemLocation = ConveyorItems[IndexOfItem].Transform.GetLocation();
-
-        float ItemLocationX = ItemLocation.X;
-        float ItemLocationY = ItemLocation.Y;
-        float ItemLocationZ = ItemLocation.Z;
-
-        TArray<float> CustomData{ItemLocationX, ItemLocationY, ItemLocationZ};
-
-        this->ItemInstances->SetCustomData(IndexOfItem, CustomData);
-    }
-
-    this->ItemInstances->MarkRenderStateDirty();
-*/
-
     TArray<FTransform> NewInstanceTransforms;
     {
         TRACE_CPUPROFILER_EVENT_SCOPE(AConveyor::UpdateInstanceTransforms_Internal)
@@ -268,15 +196,4 @@ void AConveyor::UpdateInstanceTransforms(const float &DeltaTime)
     }
 
     this->ItemInstances->BatchUpdateInstancesTransforms(0, NewInstanceTransforms, false, true, false);
-}
-
-void AConveyor::OnConnectionConnected(UBuildingConnectionComponent* FromConnectedConnection,
-                                      UBuildingConnectionComponent* ToConnectedConnection)
-{
-    Super::OnConnectionConnected(FromConnectedConnection, ToConnectedConnection);
-}
-
-void AConveyor::OnConnectionDisconnected(UBuildingConnectionComponent* DisconnectedConnection)
-{
-    Super::OnConnectionDisconnected(DisconnectedConnection);
 }
