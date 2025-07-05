@@ -21,14 +21,7 @@ class CONVEYORSYSTEM_API AMerger : public ACSBuildable
 public:
     AMerger();
 
-    virtual void CompleteBuilding(UBuildingConnectionComponent* FromSnapConnection, UBuildingConnectionComponent* ToSnapConnection) override;
-
 protected:
-    virtual void OnConnectionConnected(UBuildingConnectionComponent* FromConnectedConnection,
-                                       UBuildingConnectionComponent* ToConnectedConnection) override;
-
-    virtual void OnConnectionDisconnected(UBuildingConnectionComponent* DisconnectedConnection) override;
-
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UGraphNodeComponent* GraphNodeComponent;
 

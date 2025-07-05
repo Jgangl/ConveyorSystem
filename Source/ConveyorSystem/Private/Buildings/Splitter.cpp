@@ -25,19 +25,3 @@ ASplitter::ASplitter()
     this->InItemConnectionComponent->SetupAttachment(this->RootComponent);
     this->InItemConnectionComponent->SetIsInput(true);
 }
-
-void ASplitter::CompleteBuilding(UBuildingConnectionComponent* FromSnapConnection, UBuildingConnectionComponent* ToSnapConnection)
-{
-    Super::CompleteBuilding(FromSnapConnection, ToSnapConnection);
-}
-
-void ASplitter::OnConnectionConnected(UBuildingConnectionComponent* FromConnectedConnection,
-                                      UBuildingConnectionComponent* ToConnectedConnection)
-{
-    Super::OnConnectionConnected(FromConnectedConnection, ToConnectedConnection);
-}
-
-void ASplitter::OnConnectionDisconnected(UBuildingConnectionComponent* DisconnectedConnection)
-{
-    Super::OnConnectionDisconnected(DisconnectedConnection);
-}

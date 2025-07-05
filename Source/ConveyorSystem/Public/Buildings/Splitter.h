@@ -13,7 +13,6 @@
 
 DECLARE_LOG_CATEGORY_CLASS(LogSplitter, Log, All)
 
-
 UCLASS(Abstract, Blueprintable)
 class CONVEYORSYSTEM_API ASplitter : public ACSBuildable
 {
@@ -22,14 +21,7 @@ class CONVEYORSYSTEM_API ASplitter : public ACSBuildable
 public:
     ASplitter();
 
-    virtual void CompleteBuilding(UBuildingConnectionComponent* FromSnapConnection, UBuildingConnectionComponent* ToSnapConnection) override;
-
 protected:
-    virtual void OnConnectionConnected(UBuildingConnectionComponent* FromConnectedConnection,
-                                       UBuildingConnectionComponent* ToConnectedConnection) override;
-
-    virtual void OnConnectionDisconnected(UBuildingConnectionComponent* DisconnectedConnection) override;
-
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UGraphNodeComponent* GraphNodeComponent;
 

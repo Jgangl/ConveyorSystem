@@ -58,8 +58,6 @@ void AConveyorManager::PostInitializeComponents()
         UE_LOG(LogTemp, Error, TEXT("Multiple Conveyor Managers found. Only 1 should be added to a map."));
     }
 
-    UE_LOG(LogTemp, Warning, TEXT("Creating a graph on %s"), *this->GetName());
-
     this->ItemTransportGraph = NewObject<UItemTransportGraph>(this);
 }
 

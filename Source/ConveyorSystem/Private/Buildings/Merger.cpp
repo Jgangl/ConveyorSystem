@@ -25,30 +25,3 @@ AMerger::AMerger()
     this->OutItemConnectionComponent->SetupAttachment(this->RootComponent);
     this->OutItemConnectionComponent->SetIsInput(false);
 }
-
-void AMerger::CompleteBuilding(UBuildingConnectionComponent* FromSnapConnection, UBuildingConnectionComponent* ToSnapConnection)
-{
-    Super::CompleteBuilding(FromSnapConnection, ToSnapConnection);
-}
-
-void AMerger::OnConnectionConnected(UBuildingConnectionComponent* FromConnectedConnection,
-                                      UBuildingConnectionComponent* ToConnectedConnection)
-{
-    Super::OnConnectionConnected(FromConnectedConnection, ToConnectedConnection);
-
-    // If the output item pipe is connected, start a timer to start pushing items
-    if (FromConnectedConnection == this->OutItemConnectionComponent)
-    {
-        //UE_LOG(LogTemp, Warning, TEXT("Starting timer"));
-        //GetWorld()->GetTimerManager().SetTimer(this->OutputTimer,
-        //                                       this,
-        //                                       &AMerger::TryPushItem,
-        //                                       0.9f,
-        //                                       true);
-    }
-}
-
-void AMerger::OnConnectionDisconnected(UBuildingConnectionComponent* DisconnectedConnection)
-{
-    Super::OnConnectionDisconnected(DisconnectedConnection);
-}
