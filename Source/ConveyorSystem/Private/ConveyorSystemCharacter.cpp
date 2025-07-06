@@ -17,9 +17,6 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AConveyorSystemCharacter::AConveyorSystemCharacter()
 {
-	// Character doesnt have a rifle at start
-	bHasRifle = false;
-
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 
@@ -104,14 +101,4 @@ void AConveyorSystemCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
-}
-
-void AConveyorSystemCharacter::SetHasRifle(bool bNewHasRifle)
-{
-	bHasRifle = bNewHasRifle;
-}
-
-bool AConveyorSystemCharacter::GetHasRifle()
-{
-	return bHasRifle;
 }

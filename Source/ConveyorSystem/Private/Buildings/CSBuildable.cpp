@@ -160,6 +160,13 @@ void ACSBuildable::UpdateGraphConnections()
             continue;
         }
 
+        // Connection components can only connect to opposite types
+        if (OtherConnectionComponent->IsInput() == BuildingConnectionComponent->IsInput())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Cannot connect connections of the same type"));
+            continue;
+        }
+
         this->AddConnection(BuildingConnectionComponent, OtherConnectionComponent);
     }
 }
