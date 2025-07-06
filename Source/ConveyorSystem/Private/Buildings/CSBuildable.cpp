@@ -30,7 +30,7 @@ void ACSBuildable::CompleteBuilding(UBuildingConnectionComponent* FromSnapConnec
         return;
     }
 
-    GraphNodeComponent->SetNodeLocation(this->GetActorLocation());
+    GraphNodeComponent->SetNodeLocation(this->GetComponentsBoundingBox().GetCenter());
 
     AConveyorManager* ConveyorManager = AConveyorManager::Get();
 
